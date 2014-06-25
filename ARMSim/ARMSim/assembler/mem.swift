@@ -25,6 +25,7 @@ class Memory {
         for i in 0..memSize {
             gpr += Register(address: Double(i))
         }
+        println(gpr)
     }
     
     subscript(index:Int) -> Register! {

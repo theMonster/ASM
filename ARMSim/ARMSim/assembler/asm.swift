@@ -23,5 +23,11 @@ extension Int {
 class ASM {
     var mem:Memory = Memory()
     init() {
+        // validate instructions, memory requirements, general purpose registers, etc.
+        var a = [mem[0], mem[0], mem[1]]
+        mem[0].value = 2
+        mem[1].value = 3
+        add(&a)
+        println(mem[0].value)
     }
 }
