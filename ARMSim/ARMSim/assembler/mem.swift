@@ -23,7 +23,7 @@ class Memory {
         // allocate the gpr
         gpr = []
         for i in 0..memSize {
-            gpr[i] = Register(address: Double(i))
+            gpr += Register(address: Double(i))
         }
     }
     
