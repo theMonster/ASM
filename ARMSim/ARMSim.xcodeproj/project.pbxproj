@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		25275DD4195A8010001ED094 /* asm.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25275DD1195A7F75001ED094 /* asm.swift */; };
-		25275DD5195A8010001ED094 /* Definitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25275DD2195A7F75001ED094 /* Definitions.swift */; };
-		25275DD6195A8010001ED094 /* mem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25275DD3195A7F75001ED094 /* mem.swift */; };
-		252C717C195A678300E7FEA3 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 252C717B195A678300E7FEA3 /* main.swift */; };
+		25B9F7AE195BB3FA00C4E73E /* asm.c in Sources */ = {isa = PBXBuildFile; fileRef = 25B9F7AD195BB3FA00C4E73E /* asm.c */; };
+		25B9F7B0195BB40600C4E73E /* mem.c in Sources */ = {isa = PBXBuildFile; fileRef = 25B9F7AF195BB40600C4E73E /* mem.c */; };
+		25B9F7B2195BB40F00C4E73E /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 25B9F7B1195BB40F00C4E73E /* main.c */; };
+		25B9F7B8195BBA7B00C4E73E /* array.c in Sources */ = {isa = PBXBuildFile; fileRef = 25B9F7B7195BBA7B00C4E73E /* array.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,11 +26,14 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		25275DD1195A7F75001ED094 /* asm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = asm.swift; sourceTree = "<group>"; };
-		25275DD2195A7F75001ED094 /* Definitions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Definitions.swift; sourceTree = "<group>"; };
-		25275DD3195A7F75001ED094 /* mem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = mem.swift; sourceTree = "<group>"; };
 		252C7178195A678300E7FEA3 /* ARMSim */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ARMSim; sourceTree = BUILT_PRODUCTS_DIR; };
-		252C717B195A678300E7FEA3 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		25B9F7AD195BB3FA00C4E73E /* asm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = asm.c; sourceTree = "<group>"; };
+		25B9F7AF195BB40600C4E73E /* mem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mem.c; sourceTree = "<group>"; };
+		25B9F7B1195BB40F00C4E73E /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		25B9F7B3195BB43E00C4E73E /* asm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = asm.h; sourceTree = "<group>"; };
+		25B9F7B4195BB44C00C4E73E /* definitions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = definitions.h; sourceTree = "<group>"; };
+		25B9F7B6195BBA7400C4E73E /* array.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = array.h; sourceTree = "<group>"; };
+		25B9F7B7195BBA7B00C4E73E /* array.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = array.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,9 +50,11 @@
 		25275DD0195A7F75001ED094 /* assembler */ = {
 			isa = PBXGroup;
 			children = (
-				25275DD2195A7F75001ED094 /* Definitions.swift */,
-				25275DD1195A7F75001ED094 /* asm.swift */,
-				25275DD3195A7F75001ED094 /* mem.swift */,
+				25B9F7B4195BB44C00C4E73E /* definitions.h */,
+				25B9F7B3195BB43E00C4E73E /* asm.h */,
+				25B9F7AD195BB3FA00C4E73E /* asm.c */,
+				25B9F7AF195BB40600C4E73E /* mem.c */,
+				25B9F7B5195BBA1100C4E73E /* helpers */,
 			);
 			path = assembler;
 			sourceTree = "<group>";
@@ -73,10 +78,19 @@
 		252C717A195A678300E7FEA3 /* ARMSim */ = {
 			isa = PBXGroup;
 			children = (
-				252C717B195A678300E7FEA3 /* main.swift */,
+				25B9F7B1195BB40F00C4E73E /* main.c */,
 				25275DD0195A7F75001ED094 /* assembler */,
 			);
 			path = ARMSim;
+			sourceTree = "<group>";
+		};
+		25B9F7B5195BBA1100C4E73E /* helpers */ = {
+			isa = PBXGroup;
+			children = (
+				25B9F7B6195BBA7400C4E73E /* array.h */,
+				25B9F7B7195BBA7B00C4E73E /* array.c */,
+			);
+			path = helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -135,10 +149,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				252C717C195A678300E7FEA3 /* main.swift in Sources */,
-				25275DD5195A8010001ED094 /* Definitions.swift in Sources */,
-				25275DD4195A8010001ED094 /* asm.swift in Sources */,
-				25275DD6195A8010001ED094 /* mem.swift in Sources */,
+				25B9F7AE195BB3FA00C4E73E /* asm.c in Sources */,
+				25B9F7B0195BB40600C4E73E /* mem.c in Sources */,
+				25B9F7B2195BB40F00C4E73E /* main.c in Sources */,
+				25B9F7B8195BBA7B00C4E73E /* array.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,13 +237,18 @@
 		252C7180195A678300E7FEA3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		252C7181195A678300E7FEA3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
