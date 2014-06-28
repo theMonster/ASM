@@ -29,11 +29,17 @@ enum {
 #define GENERAL_PURPOSE_REGISTERS 8
 #define memorySize 256
 
+struct Register {
+    long address;
+    void *value;
+};
+
 struct Operation {
     char* name;
     char* asmName;
     long opcode;
     long instructionAnatomy[BIT_COUNT - OP_CODE_LENGTH];
+    void (*operationFunction)(struct Register* registers[]);
 };
 
 
@@ -57,8 +63,13 @@ struct Operation getAddOperation() {
     return addOperation;
 }
 
-void add() {
+void add(struct Register* registers[]) {
+    const int r = sizeof registers;
+    const int registersCount = sizeof(struct Register);
+    const int tmp = r / registersCount;
+    for (int i = 0; i < registersCount; ++i) {
 
+    }
 }
 
 /*

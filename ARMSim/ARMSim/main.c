@@ -14,6 +14,15 @@ int main() {
 
     getAddOperation();
 //    add.instructionAnatomy = ["", "", "", "", "", "", "", "", "", ""]
+    int a1 = 2;
+    struct Register a;
+    a.value = &a1;
+    struct Register b;
+    b.value = &a1;
+    struct Register c;
+    c.value = &a1;
 
+    struct Register* registers[] = {a,b,c};
+    add(registers);
     return 0;
 }
