@@ -10,4 +10,4 @@
 #include "lc3.h"
 /* --- isa header goes above --- */
 
-const long isa_registers_count = 2^isa_register_size;
+const uint64_t isa_registers_count = 2^isa_register_size;

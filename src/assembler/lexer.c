@@ -8,42 +8,55 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+//#include "def.h"
+#include "lexer.h"
+#include "parser.h"
 
-void cleanString(char *s) {
-    for (int i = 0; i < strlen(s); ++i) {
-        s[i] = '\0';
+
+
+
+const char* getByteCodeForToken(const char *token) {
+    char *byteCode = "";
+
+    // check if it's a register
+    // ... immutable
+    // ... opcode
+    // throw exception if it's non of these "unrecognized token"
+
+    if (token[0] == 'R') {
+        // move all characters down by 1 (moving 'r' off)
+        token = &token[1];
+        byteCode = "asdf";
     }
+
+
+
+//    const char
+//    for (int i = 0; i < ; <#increment#>) {
+//        <#statements#>
+//    }
+
+    if (strcmp(token, "ADD") == 0) {
+        byteCode = "001";
+    }
+
+    
+
+    return byteCode;
 }
 
-void append(char* s, char c)
-{
-    size_t len = strlen(s);
-    s[len] = c;
-    s[len+1] = '\0';
-}
 
-const char* translate_assembly_to_byte_code(const char *assemblyCode) {
-    // TODO: move parsing code to parser file
-    char currentChar;
-    char buffer[10];
-    int i = 0;
+const char* translate_assembly_to_byte_code(char *assemblyCode) {
+    // TODO: Translate to byte code equivilant
+    char* token;
+    assemblyCode = strdup(assemblyCode);
+    while ((token = strsep(&assemblyCode, " ")) != NULL)
+    {
+        printf("%s\n", getByteCodeForToken(token));
+    }
 
-    do {
-        currentChar = assemblyCode[i++];
-        append(buffer, currentChar);
-
-
-        if (currentChar == ' ' || currentChar == '\n' || currentChar == '\0') {
-            printf("- %s\n", buffer);
-
-            // TODO: Translate to byte code equivilant
-
-            // flush the buffer
-            cleanString(buffer);
-        }
-
-    } while (currentChar != '\0');
-
+    free(assemblyCode);
 
     fflush(stdout);
     return "";
