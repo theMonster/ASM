@@ -6,8 +6,9 @@
 //  Copyright (c) 2014 theMonster. All rights reserved.
 //
 
-/* define these */
+#include <stdio.h>
 
+/* define these */
 const uint64_t isa_bit_count = 16;
 const uint64_t isa_opcode_size = 4;
 const uint64_t isa_register_size = 3;
@@ -17,12 +18,15 @@ const char* isa_grammar[] = {
     "ADD DR SR 000 SR"
 };
 
-void add(regsiter_t* registers) {
+extern void add(regsiter_t* registers) {
     registers[0] = registers[1] + registers[2];
 }
+
 
 typedef void (*keywordFunc)(regsiter_t *registers);
 const keywordFunc isa_instruction_map[] = {
     add
 };
 
+/* implicit values */
+const uint64_t isa_registers_count = 2^isa_register_size;

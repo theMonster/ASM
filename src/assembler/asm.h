@@ -6,7 +6,10 @@
 //  Copyright (c) 2014 theMonster. All rights reserved.
 //
 
+#ifndef asm_h
+#define asm_h
+
 #include "def.h"
+#include isa_header
 
-extern char* translate_assembly_to_byte_code(const char *assemblyCode);
-
+#endif

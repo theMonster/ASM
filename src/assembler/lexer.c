@@ -6,18 +6,23 @@
 //  Copyright (c) 2014 theMonster. All rights reserved.
 //
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-//#include "def.h"
-#include "lexer.h"
-#include "parser.h"
 
+const char* convertValueToBinaryString(int value, size_t length) {
+    char *binary_s = malloc(sizeof(char) * length);
 
+    for (int i = 0; i < length; ++i) {
+        binary_s[length - 1 - i] = (value % 2) + '0';
+        value /= 2;
+    }
 
+    return binary_s;
+}
 
 const char* getByteCodeForToken(const char *token) {
-    char *byteCode = "";
+    const char *byteCode = "";
 
     // check if it's a register
     // ... immutable
@@ -26,8 +31,8 @@ const char* getByteCodeForToken(const char *token) {
 
     if (token[0] == 'R') {
         // move all characters down by 1 (moving 'r' off)
-        token = &token[1];
-        byteCode = "asdf";
+        ++token;
+//        byteCode = convertValueToBinaryString(atoi(token), isa_registers_count);
     }
 
 
@@ -36,6 +41,9 @@ const char* getByteCodeForToken(const char *token) {
 //    for (int i = 0; i < ; <#increment#>) {
 //        <#statements#>
 //    }
+
+    char *s = convertValueToBinaryString(1, 3);
+
 
     if (strcmp(token, "ADD") == 0) {
         byteCode = "001";
@@ -61,3 +69,4 @@ const char* translate_assembly_to_byte_code(char *assemblyCode) {
     fflush(stdout);
     return "";
 }
+

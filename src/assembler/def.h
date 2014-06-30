@@ -6,8 +6,11 @@
 //  Copyright (c) 2014 theMonster. All rights reserved.
 //
 
+#ifndef def_h
+#define def_h
+
 /* --- isa header goes below --- */
-#include "lc3.h"
+#define isa_header "lc3.h"
 /* --- isa header goes above --- */
 
-const uint64_t isa_registers_count = 2^isa_register_size;
+#endif
