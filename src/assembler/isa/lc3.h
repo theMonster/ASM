@@ -6,27 +6,27 @@
 //  Copyright (c) 2014 theMonster. All rights reserved.
 //
 
+#ifndef lc3_h
+#define lc3_h
+
+#include <math.h>
 #include <stdio.h>
 
 /* define these */
-const uint64_t isa_bit_count = 16;
-const uint64_t isa_opcode_size = 4;
-const uint64_t isa_register_size = 3;
+extern const uint64_t isa_bit_count;
+extern const uint64_t isa_opcode_size;
+extern const uint64_t isa_register_size;
 typedef uint16_t regsiter_t;
 
-const char* isa_grammar[] = {
-    "ADD DR SR 000 SR"
-};
+extern const char* isa_grammar[];
 
-extern void add(regsiter_t* registers) {
-    registers[0] = registers[1] + registers[2];
-}
+extern void add(regsiter_t* registers);
 
 
 typedef void (*keywordFunc)(regsiter_t *registers);
-const keywordFunc isa_instruction_map[] = {
-    add
-};
+extern const keywordFunc isa_instruction_map[];
 
 /* implicit values */
-const uint64_t isa_registers_count = 2^isa_register_size;
+extern uint64_t isa_registers_count();
+
+#endif

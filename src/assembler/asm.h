@@ -9,7 +9,10 @@
 #ifndef asm_h
 #define asm_h
 
-#include "def.h"
-#include isa_header
+/* --- isa header goes below --- */
+#include "lc3.h"
+/* --- isa header goes above --- */
+
+#include "lexer.h"
 
 #endif

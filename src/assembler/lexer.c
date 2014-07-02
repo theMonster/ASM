@@ -9,8 +9,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
+#include "asm.h"
 
-const char* convertValueToBinaryString(int value, size_t length) {
+char* convertValueToBinaryString(int value, size_t length) {
     char *binary_s = malloc(sizeof(char) * length);
 
     for (int i = 0; i < length; ++i) {
@@ -24,31 +26,19 @@ const char* convertValueToBinaryString(int value, size_t length) {
 const char* getByteCodeForToken(const char *token) {
     const char *byteCode = "";
 
-    // check if it's a register
-    // ... immutable
-    // ... opcode
-    // throw exception if it's non of these "unrecognized token"
-
+    // check conversions:
+    // ... immediate
+    // ... registers
     if (token[0] == 'R') {
         // move all characters down by 1 (moving 'r' off)
         ++token;
-//        byteCode = convertValueToBinaryString(atoi(token), isa_registers_count);
+        byteCode = convertValueToBinaryString(atoi(token), isa_register_size);
     }
-
-
-
-//    const char
-//    for (int i = 0; i < ; <#increment#>) {
-//        <#statements#>
-//    }
-
-    char *s = convertValueToBinaryString(1, 3);
-
-
+    // ... opcode
     if (strcmp(token, "ADD") == 0) {
         byteCode = "001";
     }
-
+    // throw exception if it's non of these "unrecognized token"
     
 
     return byteCode;

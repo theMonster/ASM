@@ -16,6 +16,7 @@ int main() {
     regsiter_t b = 5;
     regsiter_t c = 5;
 
+    //             001 000 001 000 010
     char *assembly = "ADD R0 R1 R2";
     translate_assembly_to_byte_code(assembly);
 
