@@ -9,6 +9,7 @@
 #ifndef lexer_h
 #define lexer_h
 
+
 extern const char* translate_assembly_to_byte_code(char *assemblyCode);
 
 #endif
