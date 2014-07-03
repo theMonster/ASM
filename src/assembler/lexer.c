@@ -23,8 +23,8 @@ char* convertValueToBinaryString(int value, size_t length) {
     return binary_s;
 }
 
-const char* getByteCodeForToken(const char *token) {
-    const char *byteCode = "";
+char* getByteCodeForToken(const char *token) {
+    char *byteCode = "";
 
     // check conversions:
     // ... immediate
@@ -33,12 +33,22 @@ const char* getByteCodeForToken(const char *token) {
         // move all characters down by 1 (moving 'r' off)
         ++token;
         byteCode = convertValueToBinaryString(atoi(token), isa_register_size);
+    } else {
+        // ... opcode
+        const uint64_t lengthOfToken = strlen(token);
+        for (int i = 0; i < NUMBER_OF_ISA_INSTRUCTIONS; ++i) {
+            // substring of token with range
+            char *substring = malloc(lengthOfToken);
+            strncpy(substring, isa_grammar[i], lengthOfToken);
+            if (strcmp(token, substring) == 0) {
+                byteCode = convertValueToBinaryString(i + 1, isa_opcode_size);
+            } else {
+                // throw exception if it's non of these "unrecognized token"
+                byteCode = "\"UNRECOGNIZED_TOKEN\"";
+            }
+            free(substring);
+        }
     }
-    // ... opcode
-    if (strcmp(token, "ADD") == 0) {
-        byteCode = "001";
-    }
-    // throw exception if it's non of these "unrecognized token"
     
 
     return byteCode;
@@ -48,10 +58,11 @@ const char* getByteCodeForToken(const char *token) {
 const char* translate_assembly_to_byte_code(char *assemblyCode) {
     // TODO: Translate to byte code equivilant
     char* token;
+
     assemblyCode = strdup(assemblyCode);
     while ((token = strsep(&assemblyCode, " ")) != NULL)
     {
-        printf("%s\n", getByteCodeForToken(token));
+        printf("%s ", getByteCodeForToken(token));
     }
 
     free(assemblyCode);

@@ -11,13 +11,13 @@
 #include "asm.h"
 
 int main() {
-    printf("Hello, World\n");
     regsiter_t a = 0;
     regsiter_t b = 5;
     regsiter_t c = 5;
 
     //             001 000 001 000 010
     char *assembly = "ADD R0 R1 R2";
+    printf("%s\n", assembly);
     translate_assembly_to_byte_code(assembly);
 
     regsiter_t registers[] = {a,b,c};
