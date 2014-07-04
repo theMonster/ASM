@@ -13,8 +13,9 @@ const uint64_t isa_bit_count = 16;
 const uint64_t isa_opcode_size = 4;
 const uint64_t isa_register_size = 3;
 
+// all grammars need to add up to the isa_bit_count
 const char* isa_grammar[NUMBER_OF_ISA_INSTRUCTIONS] = {
-    "ADD 0 DR SR SR"
+    "ADD DR SR 000 SR"
 };
 
 void add(regsiter_t* registers) {
