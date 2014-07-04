@@ -24,7 +24,7 @@ char* convertValueToBinaryString(int value, size_t length) {
 }
 
 char* getByteCodeForToken(const char *token, const char *grammar) {
-    char *byteCode = "";
+    char *byteCode = malloc(strlen(token));
 
     // check conversions:
     // ... immediate
@@ -32,7 +32,10 @@ char* getByteCodeForToken(const char *token, const char *grammar) {
     if (token[0] == 'R') {
         // move all characters down by 1 (moving 'r' off)
         ++token;
-        byteCode = convertValueToBinaryString(atoi(token), isa_register_size);
+
+        char *binaryString = convertValueToBinaryString(atoi(token), isa_register_size);
+        strncpy(byteCode, binaryString, 4);
+        free(binaryString);
     } else {
         // ... opcode
         const uint64_t lengthOfToken = strlen(token);
@@ -41,10 +44,13 @@ char* getByteCodeForToken(const char *token, const char *grammar) {
             char *grammarOpcode = malloc(lengthOfToken);
             strncpy(grammarOpcode, &grammar[i], lengthOfToken);
             if (strcmp(token, grammarOpcode) == 0) {
-                byteCode = convertValueToBinaryString(i + 1, isa_opcode_size);
+                char *binaryString = convertValueToBinaryString(i + 1, isa_opcode_size);
+                strncpy(byteCode, binaryString, 4);
+                free(binaryString);
             } else {
                 // throw exception if it's non of these "unrecognized token"
-                byteCode = "\"UNRECOGNIZED_TOKEN\"";
+                printf("\"UNRECOGNIZED_TOKEN\" (%s)", token);
+                exit(EXIT_FAILURE);
             }
             free(grammarOpcode);
         }
@@ -57,7 +63,7 @@ const char* translate_assembly_to_byte_code(char *assemblyCode) {
     // TODO: Translate to byte code equivilant
     char *token;
     char *byteCode = malloc(isa_bit_count);
-    const char* grammar = isa_grammar[0]; // TODO: Attain dynamically
+    const char* grammar = isa_grammar[0];
 
 
     assemblyCode = strdup(assemblyCode);
@@ -96,13 +102,14 @@ const char* translate_assembly_to_byte_code(char *assemblyCode) {
             bitsTraveled += numberOfVoidBits;
         }
 
+        // do a regular
         char *a = getByteCodeForToken(token, grammar);
         for (int i = 0; i <= strlen(a); ++i) {
             byteCode[bitsTraveled + i] = a[i];
         }
+        free(a);
 
-        printf("- %s\n", byteCode);
-
+        // update the counts
         charactersTraveled += strlen(token);
         bitsTraveled += strlen(a);
     }
