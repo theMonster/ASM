@@ -49,25 +49,50 @@ char* getByteCodeForToken(const char *token) {
             free(substring);
         }
     }
-    
 
     return byteCode;
 }
 
-
 const char* translate_assembly_to_byte_code(char *assemblyCode) {
     // TODO: Translate to byte code equivilant
     char* token;
+    char *byteCode = malloc(isa_bit_count);
+    const char* grammar = isa_grammar[0]; // TODO: Attain dynamically
+
 
     assemblyCode = strdup(assemblyCode);
+    int bitPos = 0;
+    int charactersTraveled = 0;
     while ((token = strsep(&assemblyCode, " ")) != NULL)
     {
-        printf("%s ", getByteCodeForToken(token));
+        charactersTraveled += strlen(token);
+        // check if bits should be injected
+        if (grammar[charactersTraveled + 2] == '0') {
+            const char *voidBitPtr = &grammar[charactersTraveled + 2];
+            int numberOfVoidBits = 1; // we know there's at least 1
+            while (*(voidBitPtr++) == '0') {
+                ++numberOfVoidBits;
+            }
+            // count the void bits
+            // inject void bits into assembly code
+            for (int i = 0; i < numberOfVoidBits; ++i) {
+                byteCode[bitPos + i] = '0';
+            }
+            bitPos += numberOfVoidBits;
+        }
+
+        char *a = getByteCodeForToken(token);
+        for (int i = 0; i <= strlen(a); ++i) {
+            byteCode[bitPos + i] = a[i];
+        }
+
+        bitPos += strlen(a);
     }
 
     free(assemblyCode);
 
+    printf("%s", byteCode);
     fflush(stdout);
-    return "";
+    return byteCode;
 }
 
