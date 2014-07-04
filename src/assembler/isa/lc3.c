@@ -18,17 +18,11 @@ const char* isa_grammar[NUMBER_OF_ISA_INSTRUCTIONS] = {
     "ADD DR SR 000 SR"
 };
 
-void add(regsiter_t* registers) {
-    registers[0] = registers[1] + registers[2];
+// all instructions should take this parameter: (regsiter_t* registers)
+void add(isa_register_t* registers[]) {
+    *registers[0] = *registers[1] + *registers[2];
 }
 
 const keywordFunc isa_instruction_map[NUMBER_OF_ISA_INSTRUCTIONS] = {
     add
 };
-
-
-/* implicit values */
-uint64_t isa_registers_count() {
-    return powl(2, isa_register_size);
-}
-

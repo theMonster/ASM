@@ -59,12 +59,12 @@ char* getByteCodeForToken(const char *token, const char *grammar) {
     return byteCode;
 }
 
-const char* translate_assembly_to_byte_code(char *assemblyCode) {
-    // TODO: Translate to byte code equivilant
+char* translate_assembly_to_byte_code(char *assemblyCode, int *grammar_index) {
     char *token;
     char *byteCode = malloc(isa_bit_count);
-    const char* grammar = isa_grammar[0];
+    const char *grammar = isa_grammar[0]; // TODO: attain dynamically
 
+    *grammar_index = 0; // TODO: attain dynamically
 
     assemblyCode = strdup(assemblyCode);
     int bitsTraveled = 0;

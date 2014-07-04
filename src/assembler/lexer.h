@@ -9,6 +9,7 @@
 #ifndef lexer_h
 #define lexer_h
 
-extern const char* translate_assembly_to_byte_code(char *assemblyCode);
+extern char* translate_assembly_to_byte_code(char *assemblyCode, int *grammar_index);
+extern char* convertValueToBinaryString(int value, size_t length);
 
 #endif

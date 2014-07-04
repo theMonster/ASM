@@ -8,36 +8,29 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "asm.h"
 
 int main() {
-    regsiter_t a = 0;
-    regsiter_t b = 5;
-    regsiter_t c = 5;
+    isa_register_t a = 0;
+    isa_register_t b = 5;
+    isa_register_t c = 5;
 
     //             001 000 001 000 010
-    char *assembly = "ADD R0 R1 R2";
+    char *assembly = "ADD R1 R1 R0";
     printf("%s\n", assembly);
-    translate_assembly_to_byte_code(assembly);
+    isa_register_t* registers[] = {&a,&b,&c};
+    int *grammar_index = malloc(1);
+    char *byteCode = translate_assembly_to_byte_code(assembly, grammar_index);
 
-    regsiter_t registers[] = {a,b,c};
+    executeByteCode(byteCode, *grammar_index, registers);
 
-    add(registers);
+    // print registers
+    printf("\n");
+    int numberOfRegisters = sizeof(registers) / sizeof(isa_register_t*);
+    for (int i = 0; i < numberOfRegisters; ++i) {
+        printf("R%i = %i\n", i, *registers[i]);
+    }
 
-
-//    printf("%i\n", registers[0]);
-
-//    getAddOperation();
-////    add.instructionAnatomy = ["", "", "", "", "", "", "", "", "", ""]
-//    int a1 = 2;
-//    struct Register a;
-//    a.value = &a1;
-//    struct Register b;
-//    b.value = &a1;
-//    struct Register c;
-//    c.value = &a1;
-//
-//    struct Register* registers[] = {a,b,c};
-//    add(registers);
     return 0;
 }

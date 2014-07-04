@@ -14,5 +14,6 @@
 /* --- isa header goes above --- */
 
 #include "lexer.h"
+#include "interpreter.h"
 
 #endif
