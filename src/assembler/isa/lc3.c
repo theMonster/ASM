@@ -14,7 +14,7 @@ const uint64_t isa_opcode_size = 4;
 const uint64_t isa_register_size = 3;
 
 const char* isa_grammar[NUMBER_OF_ISA_INSTRUCTIONS] = {
-    "ADD DR SR 000 SR"
+    "ADD 0 DR SR SR"
 };
 
 void add(regsiter_t* registers) {

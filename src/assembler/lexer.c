@@ -23,7 +23,7 @@ char* convertValueToBinaryString(int value, size_t length) {
     return binary_s;
 }
 
-char* getByteCodeForToken(const char *token) {
+char* getByteCodeForToken(const char *token, const char *grammar) {
     char *byteCode = "";
 
     // check conversions:
@@ -38,15 +38,15 @@ char* getByteCodeForToken(const char *token) {
         const uint64_t lengthOfToken = strlen(token);
         for (int i = 0; i < NUMBER_OF_ISA_INSTRUCTIONS; ++i) {
             // substring of token with range
-            char *substring = malloc(lengthOfToken);
-            strncpy(substring, isa_grammar[i], lengthOfToken);
-            if (strcmp(token, substring) == 0) {
+            char *grammarOpcode = malloc(lengthOfToken);
+            strncpy(grammarOpcode, &grammar[i], lengthOfToken);
+            if (strcmp(token, grammarOpcode) == 0) {
                 byteCode = convertValueToBinaryString(i + 1, isa_opcode_size);
             } else {
                 // throw exception if it's non of these "unrecognized token"
                 byteCode = "\"UNRECOGNIZED_TOKEN\"";
             }
-            free(substring);
+            free(grammarOpcode);
         }
     }
 
@@ -55,44 +55,59 @@ char* getByteCodeForToken(const char *token) {
 
 const char* translate_assembly_to_byte_code(char *assemblyCode) {
     // TODO: Translate to byte code equivilant
-    char* token;
+    char *token;
     char *byteCode = malloc(isa_bit_count);
     const char* grammar = isa_grammar[0]; // TODO: Attain dynamically
 
 
     assemblyCode = strdup(assemblyCode);
-    int bitPos = 0;
+    int bitsTraveled = 0;
     int charactersTraveled = 0;
-    while ((token = strsep(&assemblyCode, " ")) != NULL)
-    {
-        charactersTraveled += strlen(token);
-        // check if bits should be injected
-        if (grammar[charactersTraveled + 2] == '0') {
-            const char *voidBitPtr = &grammar[charactersTraveled + 2];
-            int numberOfVoidBits = 1; // we know there's at least 1
-            while (*(voidBitPtr++) == '0') {
-                ++numberOfVoidBits;
-            }
-            // count the void bits
-            // inject void bits into assembly code
-            for (int i = 0; i < numberOfVoidBits; ++i) {
-                byteCode[bitPos + i] = '0';
-            }
-            bitPos += numberOfVoidBits;
-        }
 
-        char *a = getByteCodeForToken(token);
-        for (int i = 0; i <= strlen(a); ++i) {
-            byteCode[bitPos + i] = a[i];
-        }
+    // check if grammar begins with void bits
+    if (grammar[0] == '0') {
+        // insert void bits into bytecode
+        const char *voidBitPtr = grammar;
+        int numberOfVoidBits = 0;
+        // count the void bits (increment through the char* until you don't see '0' anymore)
+        while (*(voidBitPtr++) == '0') ++numberOfVoidBits;
 
-        bitPos += strlen(a);
+        // inject void bits into assembly code
+        for (int i = 0; i < numberOfVoidBits; ++i) {
+            byteCode[bitsTraveled + i] = '0';
+        }
+        bitsTraveled += numberOfVoidBits;
+        grammar += numberOfVoidBits + 1;
     }
 
-    free(assemblyCode);
+    while ((token = strsep(&assemblyCode, " ")) != NULL)
+    {
+        // check if bits should be injected
+        if (grammar[charactersTraveled + 1] == '0') {
+            const char *voidBitPtr = &grammar[charactersTraveled + 2];
+            int numberOfVoidBits = 1; // we know there's at least 1
+            // count the void bits (increment through the char* until you don't see '0' anymore)
+            while (*(voidBitPtr++) == '0') ++numberOfVoidBits;
 
-    printf("%s", byteCode);
-    fflush(stdout);
+            // inject void bits into assembly code
+            for (int i = 0; i < numberOfVoidBits; ++i) {
+                byteCode[bitsTraveled + i] = '0';
+            }
+            bitsTraveled += numberOfVoidBits;
+        }
+
+        char *a = getByteCodeForToken(token, grammar);
+        for (int i = 0; i <= strlen(a); ++i) {
+            byteCode[bitsTraveled + i] = a[i];
+        }
+
+        printf("- %s\n", byteCode);
+
+        charactersTraveled += strlen(token);
+        bitsTraveled += strlen(a);
+    }
+    printf("%s\n", byteCode);
+    free(assemblyCode);
     return byteCode;
 }
 
