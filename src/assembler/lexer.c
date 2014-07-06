@@ -25,7 +25,7 @@ char* getByteCodeForToken(const char *token, const char *grammar) {
     } else if (token[0] == '0' && token[1] == 'b') {
         // ... Immediate Binary Value
     } else if (token[0] == '0' && token[1] == 'x') {
-        // ... Immediate Binary Value
+        // ... Immediate Hex Value
     } else if (token[0] == 'R') {
         // ... registers
         // move all characters down by 1 (moving 'r' off)
@@ -64,7 +64,7 @@ char* translate_assembly_to_byte_code(char *assemblyCode, int *grammar_index) {
     char *byteCode = malloc(isa_bit_count);
     const char *grammar = isa_grammar[1]; // TODO: attain dynamically
 
-    *grammar_index = 0; // TODO: attain dynamically
+    *grammar_index = 1; // TODO: attain dynamically
 
     assemblyCode = strdup(assemblyCode);
     int bitsTraveled = 0;

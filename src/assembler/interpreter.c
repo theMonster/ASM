@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "utilities.h"
 #include "interpreter.h"
 
@@ -42,7 +43,10 @@ void executeByteCode(char *byteCode, int grammar_index, isa_register_t* genPurpR
             ++registerPos;
         } else if (*grammar == 'I') {
             // immediate...
-
+            grammar += 3;
+            int numberOfBits = atoi(grammar);
+            isa_register_t immediateValue = convertBinaryStringToInt(byteCode, numberOfBits);
+            registersForFunc[registerPos] = &immediateValue;
         } else {
             // opcode...
             byteCode += isa_opcode_size;
