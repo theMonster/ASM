@@ -11,21 +11,35 @@
 #include <string.h>
 #include <math.h>
 #include "asm.h"
+#include "utilities.h"
 
 char* getByteCodeForToken(const char *token, const char *grammar) {
-    char *byteCode = malloc(strlen(token));
+    const uint64_t lengthOfToken = strlen(token);
+    char *byteCode = malloc(lengthOfToken);
 
     // check conversions:
-    if (token[0] == '#') {
-        // ... Immediate Integer Value
-        ++token;
-        // for now, we'll just assume the immediate value is the last argument
-        int n = atoi(token);
-        byteCode = convertValueToBinaryString(n, 6);
-    } else if (token[0] == '0' && token[1] == 'b') {
-        // ... Immediate Binary Value
-    } else if (token[0] == '0' && token[1] == 'x') {
-        // ... Immediate Hex Value
+    if (token[0] == '#' || (token[0] == '0' && token[1] == 'b') || (token[0] == '0' && token[1] == 'x')) {
+        while (*(grammar - 3) != 'I') ++grammar;
+        int numberOfBitsForImmediateValue = atoi(grammar);
+        if (token[0] == '#') {
+            // ... Immediate Integer Value
+            ++token;
+            // for now, we'll just assume the immediate value is the last argument
+            int n = atoi(token);
+            byteCode = convertValueToBinaryString(n, numberOfBitsForImmediateValue);
+        } else if (token[0] == '0' && token[1] == 'b') {
+            // ... Immediate Binary Value
+            token += 2;
+            size_t tokenLength = strlen(token);
+            // since it's already in binary, we literally don't have to do anything except to pre-append the necessary 0's.
+            char *tmp = malloc(numberOfBitsForImmediateValue);
+
+            for (int i = 0; i < numberOfBitsForImmediateValue; ++i) {
+                if (i < tokenLength) tmp[numberOfBitsForImmediateValue - 1 - i] = token[tokenLength - 1 - i];
+                else tmp[numberOfBitsForImmediateValue - 1 - i] = '0';
+            }
+            byteCode = tmp;
+        }
     } else if (token[0] == 'R') {
         // ... registers
         // move all characters down by 1 (moving 'r' off)
@@ -36,7 +50,6 @@ char* getByteCodeForToken(const char *token, const char *grammar) {
         free(binaryString);
     } else {
         // ... opcode
-        const uint64_t lengthOfToken = strlen(token);
         for (int i = 0; i < NUMBER_OF_ISA_INSTRUCTIONS;) {
             // substring of token with range
             char *grammarOpcode = malloc(lengthOfToken);

@@ -23,7 +23,7 @@ isa_register_t convertBinaryStringToInt(char *binaryString, uint64_t numberOfBit
     return value;
 }
 
-char* convertValueToBinaryString(int value, size_t length) {
+char* convertValueToBinaryString(uint64_t value, size_t length) {
     char *binary_s = malloc(sizeof(char) * length);
 
     for (int i = 0; i < length; ++i) {
