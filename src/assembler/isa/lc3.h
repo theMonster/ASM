@@ -13,10 +13,10 @@
 #include <stdio.h>
 
 /* define these */
-#define NUMBER_OF_ISA_INSTRUCTIONS 1
-extern const uint64_t isa_bit_count;
-extern const uint64_t isa_opcode_size;
-extern const uint64_t isa_register_size;
+#define NUMBER_OF_ISA_INSTRUCTIONS 2
+extern const uint8_t isa_bit_count;
+extern const uint8_t isa_opcode_size;
+extern const uint8_t isa_register_size;
 typedef uint16_t isa_register_t;
 
 extern const char* isa_grammar[NUMBER_OF_ISA_INSTRUCTIONS];

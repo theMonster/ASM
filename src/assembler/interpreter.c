@@ -6,21 +6,10 @@
 //  Copyright (c) 2014 theMonster. All rights reserved.
 //
 
-#include "interpreter.h"
 #include <stdio.h>
 #include <string.h>
-
-isa_register_t convertBinaryStringToInt(char *binaryString, uint64_t numberOfBitsInString) {
-    isa_register_t value = 0;
-
-    for (int i = 0; i < numberOfBitsInString; ++i) {
-        char *s = binaryString + (numberOfBitsInString - 1 - i);
-        int bit = *s - '0';
-        value |= bit  << i;
-    }
-
-    return value;
-}
+#include "utilities.h"
+#include "interpreter.h"
 
 void executeByteCode(char *byteCode, int grammar_index, isa_register_t* genPurpRegisters[]) {
     // remove void bits

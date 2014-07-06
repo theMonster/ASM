@@ -12,24 +12,22 @@
 #include <math.h>
 #include "asm.h"
 
-char* convertValueToBinaryString(int value, size_t length) {
-    char *binary_s = malloc(sizeof(char) * length);
-
-    for (int i = 0; i < length; ++i) {
-        binary_s[length - 1 - i] = (value % 2) + '0';
-        value /= 2;
-    }
-
-    return binary_s;
-}
-
 char* getByteCodeForToken(const char *token, const char *grammar) {
     char *byteCode = malloc(strlen(token));
 
     // check conversions:
-    // ... immediate
-    // ... registers
-    if (token[0] == 'R') {
+    if (token[0] == '#') {
+        // ... Immediate Integer Value
+        ++token;
+        // for now, we'll just assume the immediate value is the last argument
+        int n = atoi(token);
+        byteCode = convertValueToBinaryString(n, 6);
+    } else if (token[0] == '0' && token[1] == 'b') {
+        // ... Immediate Binary Value
+    } else if (token[0] == '0' && token[1] == 'x') {
+        // ... Immediate Binary Value
+    } else if (token[0] == 'R') {
+        // ... registers
         // move all characters down by 1 (moving 'r' off)
         ++token;
 
@@ -39,7 +37,7 @@ char* getByteCodeForToken(const char *token, const char *grammar) {
     } else {
         // ... opcode
         const uint64_t lengthOfToken = strlen(token);
-        for (int i = 0; i < NUMBER_OF_ISA_INSTRUCTIONS; ++i) {
+        for (int i = 0; i < NUMBER_OF_ISA_INSTRUCTIONS;) {
             // substring of token with range
             char *grammarOpcode = malloc(lengthOfToken);
             strncpy(grammarOpcode, &grammar[i], lengthOfToken);
@@ -47,12 +45,14 @@ char* getByteCodeForToken(const char *token, const char *grammar) {
                 char *binaryString = convertValueToBinaryString(i + 1, isa_opcode_size);
                 strncpy(byteCode, binaryString, 4);
                 free(binaryString);
+                free(grammarOpcode);
+                break;
             } else {
                 // throw exception if it's non of these "unrecognized token"
-                printf("\"UNRECOGNIZED_TOKEN\" (%s)", token);
+                printf("UNRECOGNIZED_TOKEN \"%s\"", token);
                 exit(EXIT_FAILURE);
             }
-            free(grammarOpcode);
+            
         }
     }
 
@@ -62,7 +62,7 @@ char* getByteCodeForToken(const char *token, const char *grammar) {
 char* translate_assembly_to_byte_code(char *assemblyCode, int *grammar_index) {
     char *token;
     char *byteCode = malloc(isa_bit_count);
-    const char *grammar = isa_grammar[0]; // TODO: attain dynamically
+    const char *grammar = isa_grammar[1]; // TODO: attain dynamically
 
     *grammar_index = 0; // TODO: attain dynamically
 

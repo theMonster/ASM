@@ -17,7 +17,7 @@ int main() {
     isa_register_t c = 5;
 
     //             001 000 001 000 010
-    char *assembly = "ADD R1 R1 R0";
+    char *assembly = "ADD R0 R1 #3";
     printf("%s\n", assembly);
     isa_register_t* registers[] = {&a,&b,&c};
     int *grammar_index = malloc(1);
