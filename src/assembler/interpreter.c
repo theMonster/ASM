@@ -14,7 +14,9 @@
 
 void executeByteCode(char *byteCode, int grammar_index, isa_register_t* genPurpRegisters[]) {
     // remove void bits
-    const char *grammar = isa_grammar[grammar_index];
+    char *grammar = malloc(strlen(isa_grammar[grammar_index]));
+    strcpy(grammar, isa_grammar[grammar_index]);
+
     int numberOfVoidBitsAtBeginning = 0;
     while (*grammar == '0' || *grammar == ' ') {
         if (*grammar == '0') ++numberOfVoidBitsAtBeginning;
@@ -47,13 +49,14 @@ void executeByteCode(char *byteCode, int grammar_index, isa_register_t* genPurpR
             int numberOfBits = atoi(grammar);
             isa_register_t immediateValue = convertBinaryStringToInt(byteCode, numberOfBits);
             registersForFunc[registerPos] = &immediateValue;
+            ++registerPos;
         } else {
             // opcode...
             byteCode += isa_opcode_size;
         }
 
         // move to the next token
-        while (*(++grammar - 1) != ' ');
+        while (*(++grammar - 1) != ' ' && *grammar != '\0');
     }
 
     isa_instruction_map[grammar_index](registersForFunc);

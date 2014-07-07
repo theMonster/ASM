@@ -72,12 +72,63 @@ char* getByteCodeForToken(const char *token, const char *grammar) {
     return byteCode;
 }
 
+
+
+int findGrammarIndex(const char *asmCode) {
+    for (int i = 0; i < NUMBER_OF_ISA_INSTRUCTIONS; ++i) {
+        char *grammar = malloc(strlen(isa_grammar[i]));
+        strcpy(grammar, isa_grammar[i]);
+
+        const char *assemblyCode = asmCode;
+        while (1) {
+            // skip void bits
+            while (*grammar == '0' || *grammar == '1') ++grammar;
+
+            if (*grammar != *assemblyCode && *grammar != 'I')
+                break;
+
+            if (*grammar == 'R') {
+                // register...
+                while (*((++grammar - 1)) != ' ' && *grammar != '\0');
+                while (*((++assemblyCode - 1)) != ' ' && *assemblyCode != '\0');
+                printf("");
+            } else if (*grammar == 'I') {
+                // immediate value...
+                while (*((++grammar - 1)) != ' ' && *grammar != '\0');
+                while (*((++assemblyCode - 1)) != ' ' && *assemblyCode != '\0');
+            } else if (*grammar == *assemblyCode) {
+                // opcode
+                while (*(++grammar) == *(++assemblyCode));
+            } else {
+                break; // failed to match the token, we'll assume that this is no match.
+            }
+
+            // if 'grammar' ends on a SR or DR, remove the 'S' or 'D'
+            if ((*grammar == 'S' || *grammar == 'D') && *(grammar + 1) == 'R')
+                ++grammar;
+
+            // if both grammar and assemblyCode have reached the end and are '\0', then we've found a match
+            if (*grammar == '\0' && *assemblyCode == '\0') {
+                return i;
+            }
+
+        }
+    }
+    return -1;
+}
+
 char* translate_assembly_to_byte_code(char *assemblyCode, int *grammar_index) {
     char *token;
     char *byteCode = malloc(isa_bit_count);
-    const char *grammar = isa_grammar[1]; // TODO: attain dynamically
 
-    *grammar_index = 1; // TODO: attain dynamically
+    *grammar_index = findGrammarIndex(assemblyCode);
+    // did the grammar successfully get reported
+    if (*grammar_index < 0) {
+        printf("Failure to match a grammar for assebly code: \"%s\"", assemblyCode);
+        exit(EXIT_FAILURE);
+    }
+
+    const char *grammar = isa_grammar[*grammar_index];
 
     assemblyCode = strdup(assemblyCode);
     int bitsTraveled = 0;
@@ -126,7 +177,6 @@ char* translate_assembly_to_byte_code(char *assemblyCode, int *grammar_index) {
         charactersTraveled += strlen(token);
         bitsTraveled += strlen(a);
     }
-    printf("%s\n", byteCode);
     free(assemblyCode);
     return byteCode;
 }

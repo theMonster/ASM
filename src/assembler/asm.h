@@ -16,4 +16,7 @@
 #include "lexer.h"
 #include "interpreter.h"
 
+/* -- Assembler functions -- */
+extern void interpretAndExecuteFile(FILE *f);
+
 #endif

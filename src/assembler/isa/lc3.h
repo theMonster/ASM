@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 /* define these */
-#define NUMBER_OF_ISA_INSTRUCTIONS 2
+#define NUMBER_OF_ISA_INSTRUCTIONS 4
 extern const uint8_t isa_bit_count;
 extern const uint8_t isa_opcode_size;
 extern const uint8_t isa_register_size;
@@ -21,7 +21,8 @@ typedef uint16_t isa_register_t;
 
 extern const char* isa_grammar[NUMBER_OF_ISA_INSTRUCTIONS];
 
-void add(isa_register_t* registers[]);
+extern void isa_add(isa_register_t* registers[]);
+extern void isa_and(isa_register_t* registers[]);
 
 typedef void (*keywordFunc)(isa_register_t* registers[]);
 extern const keywordFunc isa_instruction_map[NUMBER_OF_ISA_INSTRUCTIONS];
