@@ -1,1 +1,1 @@
-AND R3 R0 R1
+AND R2 R0 R0

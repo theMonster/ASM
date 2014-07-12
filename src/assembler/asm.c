@@ -10,12 +10,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 void interpretAndExecuteFile(FILE *f) {
-    isa_register_t a = 0;
-    isa_register_t b = 0;
-    isa_register_t c = 0;
-    isa_register_t* registers[] = {&a,&b,&c};
+    size_t registersCount = powf(2, isa_register_size);
+    isa_register_t* registers[registersCount];
+
+    for (int i = 0; i < registersCount; ++i) {
+        isa_register_t a = 0;
+        registers[i] = &a;
+    }
 
     char line[128]; /* or other suitable maximum line size */
     while (fgets(line, sizeof line, f) != NULL) /* read a line */
@@ -30,7 +34,7 @@ void interpretAndExecuteFile(FILE *f) {
 
     // print registers
     printf("\n");
-    int numberOfRegisters = sizeof(registers) / sizeof(isa_register_t*);
+    size_t numberOfRegisters = sizeof(registers) / sizeof(isa_register_t*);
     for (int i = 0; i < numberOfRegisters; ++i) {
         printf("R%i = %i\n", i, *registers[i]);
     }

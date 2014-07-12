@@ -59,5 +59,5 @@ void executeByteCode(char *byteCode, int grammar_index, isa_register_t* genPurpR
         while (*(++grammar - 1) != ' ' && *grammar != '\0');
     }
 
-    isa_instruction_map[grammar_index](registersForFunc);
+    isa_instruction_map[grammar_index](registersForFunc, genPurpRegisters);
 }

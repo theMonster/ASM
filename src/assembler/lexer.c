@@ -81,8 +81,6 @@ int findGrammarIndex(const char *asmCode) {
 
         const char *assemblyCode = asmCode;
         while (1) {
-            // skip void bits
-            while (*grammar == '0' || *grammar == '1') ++grammar;
 
             if (*grammar != *assemblyCode && *grammar != 'I')
                 break;
@@ -102,6 +100,10 @@ int findGrammarIndex(const char *asmCode) {
             } else {
                 break; // failed to match the token, we'll assume that this is no match.
             }
+
+            // skip void bits
+            while (*grammar == '0' || *grammar == '1') ++grammar;
+            if (*grammar == ' ') ++grammar;
 
             // if 'grammar' ends on a SR or DR, remove the 'S' or 'D'
             if ((*grammar == 'S' || *grammar == 'D') && *(grammar + 1) == 'R')
