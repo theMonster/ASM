@@ -1,1 +1,3 @@
-AND R2 R0 R0
+ADD R1 R1 #1
+MULT R1 R1 #12
+

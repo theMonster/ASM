@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 /* define these */
-#define NUMBER_OF_ISA_INSTRUCTIONS 5
+#define NUMBER_OF_ISA_INSTRUCTIONS 6
 extern const uint16_t isa_bit_count;
 extern const uint16_t isa_opcode_size;
 extern const uint16_t isa_register_size;

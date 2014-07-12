@@ -17,8 +17,8 @@ void interpretAndExecuteFile(FILE *f) {
     isa_register_t* registers[registersCount];
 
     for (int i = 0; i < registersCount; ++i) {
-        isa_register_t a = 0;
-        registers[i] = &a;
+        registers[i] = malloc(sizeof(isa_register_t));
+        *registers[i] = 0;
     }
 
     char line[128]; /* or other suitable maximum line size */
@@ -26,7 +26,7 @@ void interpretAndExecuteFile(FILE *f) {
     {
         int grammar_index = 0;
         char *byteCode = translate_assembly_to_byte_code(line, &grammar_index);
-        executeByteCode(byteCode, grammar_index, registers);
+        if (byteCode) executeByteCode(byteCode, grammar_index, registers);
 
         printf("%s", line);
     }
@@ -37,5 +37,10 @@ void interpretAndExecuteFile(FILE *f) {
     size_t numberOfRegisters = sizeof(registers) / sizeof(isa_register_t*);
     for (int i = 0; i < numberOfRegisters; ++i) {
         printf("R%i = %i\n", i, *registers[i]);
+    }
+
+    // free the registers
+    for (int i = 0; i < registersCount; ++i) {
+        free(registers[i]);
     }
 }

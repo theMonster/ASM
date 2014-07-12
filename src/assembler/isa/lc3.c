@@ -19,9 +19,8 @@ const char* isa_grammar[NUMBER_OF_ISA_INSTRUCTIONS] = {
     "ADD DR SR IMM6",
     "AND DR SR 000 SR",
     "AND DR SR IMM6",
-    // BR
-    ""
-
+    "MULT DR SR 000 SR",
+    "MULT DR SR 0 IMM5"
 };
 
 // all instructions should take this parameter: (regsiter_t* registers)
@@ -33,8 +32,8 @@ void isa_and(isa_register_t* registers[], isa_register_t* generalPurposeRegister
     *registers[0] = *registers[1] & *registers[2];
 }
 
-void isa_jmp(isa_register_t* registers[], isa_register_t* generalPurposeRegisters[]) {
-    *registers[0] = *registers[1] & *registers[2];
+void isa_multiply(isa_register_t* registers[], isa_register_t* generalPurposeRegisters[]) {
+    *registers[0] = *registers[1] * *registers[2];
 }
 
 const keywordFunc isa_instruction_map[NUMBER_OF_ISA_INSTRUCTIONS] = {
@@ -42,5 +41,6 @@ const keywordFunc isa_instruction_map[NUMBER_OF_ISA_INSTRUCTIONS] = {
     isa_add,
     isa_and,
     isa_and,
-    isa_jmp
+    isa_multiply,
+    isa_multiply
 };

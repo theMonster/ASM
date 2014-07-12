@@ -126,6 +126,7 @@ char* translate_assembly_to_byte_code(char *assemblyCode, int *grammar_index) {
     *grammar_index = findGrammarIndex(assemblyCode);
     // did the grammar successfully get reported
     if (*grammar_index < 0) {
+        if (*assemblyCode == '\n') return NULL; // fail silently... (it's just whitespace)
         printf("Failure to match a grammar for assebly code: \"%s\"", assemblyCode);
         exit(EXIT_FAILURE);
     }
