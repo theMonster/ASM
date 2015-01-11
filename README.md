@@ -22,6 +22,7 @@ This is still a work in progress and some features are still being implemented. 
 - some sort of GUI interface
 - LC-3 complete implementation
 - PC (& other) registers exposed to the general purpose registers
+- General Purpose memory
 - LLVM IR support & easy export from LLVM IR to an executable binary.
 
 I'm still thinking of new cool ideas for this assembler. If you have any, open up an issue and label it with "feature request".
