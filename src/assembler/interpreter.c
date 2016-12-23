@@ -35,6 +35,7 @@ void executeByteCode(Instruction instruction, size_t generalPurposeRegistersCoun
         if (*mutableGrammar == '0') {
             // void bits...
             while (*mutableGrammar == '0') {
+                ++mutableByteCode;
                 ++mutableGrammar;
             }
             ++mutableGrammar;

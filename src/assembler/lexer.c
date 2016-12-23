@@ -130,7 +130,7 @@ char* translateAssemblyToByteCode(char *assemblyCode, int *opCode) {
 
     const char* grammar = isa_grammar[*opCode];
     
-    assemblyCodeCopy = strdup(assemblyCodeCopy);
+    assemblyCodeCopy = strdup(assemblyCode);
     char *grammarCopy = strdup(grammar);
     char *assemblyToken, *grammarToken;
     
@@ -151,9 +151,8 @@ char* translateAssemblyToByteCode(char *assemblyCode, int *opCode) {
         
     }
     
-    
-    
     free(assemblyCodeCopy);
+    free(grammarCopy);
     // check our work:
     const size_t byteCodeLen = strlen(byteCode);
     if (byteCodeLen != isa_bit_count) {
