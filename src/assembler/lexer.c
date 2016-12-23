@@ -134,7 +134,7 @@ char* translateAssemblyToByteCode(char *assemblyCode, int *opCode) {
     char *grammarCopy = strdup(grammar);
     char *assemblyToken, *grammarToken;
     
-    do {
+    while (assemblyCodeCopy && grammarCopy) {
         // get the tokens
         assemblyToken = strsep(&assemblyCodeCopy, " ");
         grammarToken = strsep(&grammarCopy, " ");
@@ -149,7 +149,7 @@ char* translateAssemblyToByteCode(char *assemblyCode, int *opCode) {
         char *byteCodeForToken = getByteCodeForToken(assemblyToken, grammarToken, *opCode);
         byteCode = append(byteCode, byteCodeForToken);
         
-    } while (assemblyCodeCopy && grammarCopy);
+    }
     
     
     
