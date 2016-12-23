@@ -48,9 +48,15 @@ void interpretAndExecuteFile(FILE *f) {
     
     // execute byte code
     for (size_t i = 0; i < MAX_NUMBER_OF_COMMANDS; ++i) {
-        // check the system's status byte for errors
-        // execute the next command
         isa_register_t *programCounter = reservedRegisters[PROGRAM_COUNTER_REGISTER_ADDRESS];
+        isa_register_t code = *reservedRegisters[MACHINE_STATUS_REGISTER_ADDRESS];
+        // check the system's status byte for errors
+        if (code != 0) {
+            char *title, *message;
+            retrieveInfoForStatusCode(code, &title, &message);
+            printf("ERROR <code: %i>: %s. \"%s\"", code, title, message);
+        }
+        // execute the next command
         struct Instruction instruction = instructions[*programCounter];
         if (!instruction.originalAsm || strlen(instruction.originalAsm) <= 0) {
             break;

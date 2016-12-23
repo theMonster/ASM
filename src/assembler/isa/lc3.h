@@ -35,4 +35,7 @@ extern const isa_register_t MACHINE_STATUS_REGISTER_ADDRESS;
 extern const isa_register_t IMMUTABLE_VALUE_REGISTER_ADDRESS;
 extern const isa_register_t PROGRAM_COUNTER_REGISTER_ADDRESS;
 
+// used to get more info about a status code.
+extern void retrieveInfoForStatusCode(isa_register_t code, char** title, char** message);
+
 #endif
