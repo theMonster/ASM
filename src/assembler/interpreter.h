@@ -11,6 +11,12 @@
 
 #include "asm.h"
 
-extern void executeByteCode(char *byteCode, int grammar_index, isa_register_t* genPurpRegisters[]);
+typedef struct Instruction {
+    const int opCode;
+    const char* originalAsm;
+    const char* byteCode;
+} Instruction;
+
+extern void executeByteCode(Instruction instruction, size_t generalPurposeRegistersCount, isa_register_t* genPurpRegisters[], size_t reservedRegistersCount, isa_register_t* reservedRegisters[]);
 
 #endif

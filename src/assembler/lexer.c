@@ -27,7 +27,8 @@ char* getByteCodeForToken(const char *token, const char *grammar) {
             // for now, we'll just assume the immediate value is the last argument
             int n = atoi(token);
             byteCode = convertValueToBinaryString(n, numberOfBitsForImmediateValue);
-        } else if (token[0] == '0' && token[1] == 'b') {
+        }
+        else if (token[0] == '0' && token[1] == 'b') {
             // ... Immediate Binary Value
             token += 2;
             size_t tokenLength = strlen(token);
@@ -89,15 +90,17 @@ int findGrammarIndex(const char *asmCode) {
                 // register...
                 while (*((++grammar - 1)) != ' ' && *grammar != '\0');
                 while (*((++assemblyCode - 1)) != ' ' && *assemblyCode != '\0');
-                printf("");
-            } else if (*grammar == 'I') {
+            }
+            else if (*grammar == 'I') {
                 // immediate value...
                 while (*((++grammar - 1)) != ' ' && *grammar != '\0');
                 while (*((++assemblyCode - 1)) != ' ' && *assemblyCode != '\0');
-            } else if (*grammar == *assemblyCode) {
+            }
+            else if (*grammar == *assemblyCode) {
                 // opcode
                 while (*(++grammar) == *(++assemblyCode));
-            } else {
+            }
+            else {
                 break; // failed to match the token, we'll assume that this is no match.
             }
 
@@ -119,20 +122,21 @@ int findGrammarIndex(const char *asmCode) {
     return -1;
 }
 
-char* translate_assembly_to_byte_code(char *assemblyCode, int *grammar_index) {
+char* translateAssemblyToByteCode(char *assemblyCode, int *opCode) {
     char *token;
     char *byteCode = malloc(isa_bit_count);
 
-    *grammar_index = findGrammarIndex(assemblyCode);
+    *opCode = findGrammarIndex(assemblyCode);
     // did the grammar successfully get reported
-    if (*grammar_index < 0) {
+    if (*opCode < 0) {
         if (*assemblyCode == '\n') return NULL; // fail silently... (it's just whitespace)
         printf("Failure to match a grammar for assebly code: \"%s\"", assemblyCode);
+        free(byteCode);
         exit(EXIT_FAILURE);
     }
 
-    const char *grammar = isa_grammar[*grammar_index];
-
+    const char *grammar = isa_grammar[*opCode];
+    
     assemblyCode = strdup(assemblyCode);
     int bitsTraveled = 0;
     int charactersTraveled = 0;

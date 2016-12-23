@@ -24,13 +24,13 @@ isa_register_t convertBinaryStringToInt(char *binaryString, uint64_t numberOfBit
 }
 
 char* convertValueToBinaryString(uint64_t value, size_t length) {
-    char *binary_s = malloc(sizeof(char) * length);
-
-    for (int i = 0; i < length; ++i) {
-        binary_s[length - 1 - i] = (value % 2) + '0';
+    char *binaryString = malloc(sizeof(char) * length);
+    memset(binaryString, '0', length);
+    
+    for (size_t i = length - 1; i <= length + 1; --i) {
+        binaryString[i] = (value % 2) + '0';
         value /= 2;
     }
-
-    return binary_s;
+    
+    return binaryString;
 }
-

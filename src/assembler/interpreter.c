@@ -12,52 +12,60 @@
 #include "utilities.h"
 #include "interpreter.h"
 
-void executeByteCode(char *byteCode, int grammar_index, isa_register_t* genPurpRegisters[]) {
+void executeByteCode(Instruction instruction, size_t generalPurposeRegistersCount, isa_register_t* generalPurposeRegisters[], size_t reservedRegistersCount, isa_register_t* reservedRegisters[]) {
+    // create copy of bytecode
+    char* mutableByteCode = malloc(sizeof(char) * isa_bit_count);
+    strcpy(mutableByteCode, instruction.byteCode);
+    char* mutableGrammar = malloc(sizeof(char) * strlen(isa_grammar[instruction.opCode]));
+    strcpy(mutableGrammar, isa_grammar[instruction.opCode]);
+
     // remove void bits
-    char *grammar = malloc(strlen(isa_grammar[grammar_index]));
-    strcpy(grammar, isa_grammar[grammar_index]);
-
     int numberOfVoidBitsAtBeginning = 0;
-    while (*grammar == '0' || *grammar == ' ') {
-        if (*grammar == '0') ++numberOfVoidBitsAtBeginning;
-        ++grammar;
+    while (*mutableGrammar == '0' || *mutableGrammar == ' ') {
+        if (*mutableGrammar == '0') ++numberOfVoidBitsAtBeginning;
+        ++mutableGrammar;
     }
-    byteCode += numberOfVoidBitsAtBeginning;
-
-    isa_register_t* registersForFunc[3] = {NULL, NULL, NULL}; // TODO: Attain dynamically
-    int registerPos = 0;
-
-    while (*byteCode != '\0') {
+    mutableByteCode += numberOfVoidBitsAtBeginning;
+    
+    const size_t MAXIMUM_NUMBER_OF_REGISTERS_FOR_SINGLE_FUNCTION = 3;
+    isa_register_t* operationRegisters[MAXIMUM_NUMBER_OF_REGISTERS_FOR_SINGLE_FUNCTION] = {};
+    
+    for (int i = 0; *mutableByteCode != '\0';) {
         // destory the void bits...
-        if (*grammar == '0') {
+        if (*mutableGrammar == '0') {
             // void bits...
-            while (*grammar == '0') {
-                ++grammar;
+            while (*mutableGrammar == '0') {
+                ++mutableGrammar;
             }
-            ++grammar;
+            ++mutableGrammar;
         }
 
-        if (*(grammar + 1) == 'R') {
+        if (*(mutableGrammar + 1) == 'R') {
             // register...
-            uint64_t pos = convertBinaryStringToInt(byteCode, isa_register_size);
-            registersForFunc[registerPos] = genPurpRegisters[pos];
-            byteCode += isa_register_size;
-            ++registerPos;
-        } else if (*grammar == 'I') {
-            // immediate...
-            grammar += 3;
-            int numberOfBits = atoi(grammar);
-            isa_register_t immediateValue = convertBinaryStringToInt(byteCode, numberOfBits);
-            registersForFunc[registerPos] = &immediateValue;
-            ++registerPos;
-        } else {
-            // opcode...
-            byteCode += isa_opcode_size;
+            uint64_t pos = convertBinaryStringToInt(mutableByteCode, isa_register_size);
+            isa_register_t *pointerToRegister = generalPurposeRegisters[pos];
+            operationRegisters[i++] = pointerToRegister;
+            mutableByteCode += isa_register_size;
         }
-
+        else if (*mutableGrammar == 'I') {
+            // immediate... move past the IMM
+            mutableGrammar += 3;
+            int numberOfBits = atoi(mutableGrammar);
+            isa_register_t immediateValue = convertBinaryStringToInt(mutableByteCode, numberOfBits);
+            // for now, we only ever use the first reserved register for the immediate value.
+            reservedRegisters[IMMUTABLE_VALUE_REGISTER_ADDRESS] = &immediateValue;
+            operationRegisters[i++] = reservedRegisters[IMMUTABLE_VALUE_REGISTER_ADDRESS];
+            mutableByteCode += numberOfBits;
+        }
+        else {
+            // opcode...
+            mutableByteCode += isa_opcode_size;
+        }
+        
         // move to the next token
-        while (*(++grammar - 1) != ' ' && *grammar != '\0');
+        while (*(++mutableGrammar - 1) != ' ' && *mutableGrammar != '\0');
     }
-
-    isa_instruction_map[grammar_index](registersForFunc, genPurpRegisters);
+    
+    struct ISA_Operation op = { operationRegisters, generalPurposeRegisters, reservedRegisters };
+    isa_instruction_map[instruction.opCode](op);
 }

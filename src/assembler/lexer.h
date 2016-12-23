@@ -9,6 +9,6 @@
 #ifndef lexer_h
 #define lexer_h
 
-extern char* translate_assembly_to_byte_code(char *assemblyCode, int *grammar_index);
+extern char* translateAssemblyToByteCode(char *assemblyCode, int *opCode);
 
 #endif
