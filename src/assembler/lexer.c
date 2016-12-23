@@ -13,7 +13,7 @@
 #include "asm.h"
 #include "utilities.h"
 
-char* getByteCodeForToken(const char *token, const char *grammar) {
+char* getByteCodeForToken(const char *token, const char *grammar, const int opCode) {
     const uint64_t lengthOfToken = strlen(token);
     char *byteCode = malloc(lengthOfToken);
 
@@ -51,23 +51,10 @@ char* getByteCodeForToken(const char *token, const char *grammar) {
         free(binaryString);
     } else {
         // ... opcode
-        for (int i = 0; i < NUMBER_OF_ISA_INSTRUCTIONS;) {
-            // substring of token with range
-            char *grammarOpcode = malloc(lengthOfToken);
-            strncpy(grammarOpcode, &grammar[i], lengthOfToken);
-            if (strcmp(token, grammarOpcode) == 0) {
-                char *binaryString = convertValueToBinaryString(i + 1, isa_opcode_size);
-                strncpy(byteCode, binaryString, 4);
-                free(binaryString);
-                free(grammarOpcode);
-                break;
-            } else {
-                // throw exception if it's non of these "unrecognized token"
-                printf("UNRECOGNIZED_TOKEN \"%s\"", token);
-                exit(EXIT_FAILURE);
-            }
-            
-        }
+        // generate byte code for op code
+        char *binaryString = convertValueToBinaryString(opCode, isa_opcode_size);
+        strncpy(byteCode, binaryString, 4);
+        free(binaryString);
     }
 
     return byteCode;
@@ -123,68 +110,56 @@ int findGrammarIndex(const char *asmCode) {
 }
 
 char* translateAssemblyToByteCode(char *assemblyCode, int *opCode) {
-    char *token;
+    size_t asmLineLen = strlen(assemblyCode);
+    char *assemblyCodeCopy = malloc(asmLineLen);
+    memcpy(assemblyCodeCopy, assemblyCode, asmLineLen);
+    // validate assembly:
+    if (!assemblyCode || strlen(assemblyCode) == 0) {
+        return NULL;
+    }
+    
     char *byteCode = malloc(isa_bit_count);
-
-    *opCode = findGrammarIndex(assemblyCode);
+    *opCode = findGrammarIndex(assemblyCodeCopy);
     // did the grammar successfully get reported
     if (*opCode < 0) {
-        if (*assemblyCode == '\n') return NULL; // fail silently... (it's just whitespace)
-        printf("Failure to match a grammar for assebly code: \"%s\"", assemblyCode);
+        if (*assemblyCodeCopy == '\n') return NULL; // fail silently... (it's just whitespace)
         free(byteCode);
+        free(assemblyCodeCopy);
+        return NULL;
+    }
+
+    const char* grammar = isa_grammar[*opCode];
+    
+    assemblyCodeCopy = strdup(assemblyCodeCopy);
+    char *grammarCopy = strdup(grammar);
+    char *assemblyToken, *grammarToken;
+    
+    do {
+        // get the tokens
+        assemblyToken = strsep(&assemblyCodeCopy, " ");
+        grammarToken = strsep(&grammarCopy, " ");
+        
+        // inject void bits:
+        while (grammarToken && *grammarToken == '0') {
+            byteCode = append(byteCode, grammarToken);
+            // move to next grammar token
+            grammarToken = strsep(&grammarCopy, " ");
+        }
+        
+        char *byteCodeForToken = getByteCodeForToken(assemblyToken, grammarToken, *opCode);
+        byteCode = append(byteCode, byteCodeForToken);
+        
+    } while (assemblyCodeCopy && grammarCopy);
+    
+    
+    
+    free(assemblyCodeCopy);
+    // check our work:
+    const size_t byteCodeLen = strlen(byteCode);
+    if (byteCodeLen != isa_bit_count) {
+        printf("FATAL: Code Generator failed to generate proper byte count (%zu should be %i) for given asm: \"%s\" and grammar: \"%s\". Result = \"%s\" opcode = \"%i\".\n", byteCodeLen, isa_bit_count, assemblyCode, grammar, byteCode, *opCode);
         exit(EXIT_FAILURE);
     }
-
-    const char *grammar = isa_grammar[*opCode];
-    
-    assemblyCode = strdup(assemblyCode);
-    int bitsTraveled = 0;
-    int charactersTraveled = 0;
-
-    // check if grammar begins with void bits
-    if (grammar[0] == '0') {
-        // insert void bits into bytecode
-        const char *voidBitPtr = grammar;
-        int numberOfVoidBits = 0;
-        // count the void bits (increment through the char* until you don't see '0' anymore)
-        while (*(voidBitPtr++) == '0') ++numberOfVoidBits;
-
-        // inject void bits into assembly code
-        for (int i = 0; i < numberOfVoidBits; ++i) {
-            byteCode[bitsTraveled + i] = '0';
-        }
-        bitsTraveled += numberOfVoidBits;
-        grammar += numberOfVoidBits + 1;
-    }
-
-    while ((token = strsep(&assemblyCode, " ")) != NULL)
-    {
-        // check if bits should be injected
-        if (grammar[charactersTraveled + 1] == '0') {
-            const char *voidBitPtr = &grammar[charactersTraveled + 2];
-            int numberOfVoidBits = 1; // we know there's at least 1
-            // count the void bits (increment through the char* until you don't see '0' anymore)
-            while (*(voidBitPtr++) == '0') ++numberOfVoidBits;
-
-            // inject void bits into assembly code
-            for (int i = 0; i < numberOfVoidBits; ++i) {
-                byteCode[bitsTraveled + i] = '0';
-            }
-            bitsTraveled += numberOfVoidBits;
-        }
-
-        // do a regular
-        char *a = getByteCodeForToken(token, grammar);
-        for (int i = 0; i <= strlen(a); ++i) {
-            byteCode[bitsTraveled + i] = a[i];
-        }
-        free(a);
-
-        // update the counts
-        charactersTraveled += strlen(token);
-        bitsTraveled += strlen(a);
-    }
-    free(assemblyCode);
     return byteCode;
 }
 

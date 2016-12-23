@@ -11,6 +11,12 @@
 #include <stdlib.h>
 #include "utilities.h"
 
+char * append(char * string1, char * string2) {
+    char * result = NULL;
+    asprintf(&result, "%s%s", string1, string2);
+    return result;
+}
+
 isa_register_t convertBinaryStringToInt(char *binaryString, uint64_t numberOfBitsInString) {
     isa_register_t value = 0;
 

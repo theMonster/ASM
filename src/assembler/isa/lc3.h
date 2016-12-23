@@ -13,7 +13,7 @@
 #include <stdio.h>
 
 /* define these */
-#define NUMBER_OF_ISA_INSTRUCTIONS 9
+#define NUMBER_OF_ISA_INSTRUCTIONS 11
 extern const uint16_t isa_bit_count;
 extern const uint16_t isa_opcode_size;
 extern const uint16_t isa_register_size;
@@ -31,6 +31,7 @@ typedef void (*keywordFunc)(struct ISA_Operation);
 extern const keywordFunc isa_instruction_map[NUMBER_OF_ISA_INSTRUCTIONS];
 
 /// system register indecies
+extern const isa_register_t MACHINE_STATUS_REGISTER_ADDRESS;
 extern const isa_register_t IMMUTABLE_VALUE_REGISTER_ADDRESS;
 extern const isa_register_t PROGRAM_COUNTER_REGISTER_ADDRESS;
 

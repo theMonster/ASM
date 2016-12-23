@@ -13,8 +13,9 @@ const uint16_t isa_bit_count = 16;
 const uint16_t isa_opcode_size = 4;
 const uint16_t isa_register_size = 3;
 /// system register indecies
-const isa_register_t IMMUTABLE_VALUE_REGISTER_ADDRESS = 0;
-const isa_register_t PROGRAM_COUNTER_REGISTER_ADDRESS = 1;
+const isa_register_t MACHINE_STATUS_REGISTER_ADDRESS = 0;
+const isa_register_t IMMUTABLE_VALUE_REGISTER_ADDRESS = 1;
+const isa_register_t PROGRAM_COUNTER_REGISTER_ADDRESS = 2;
 
 // all grammars need to add up to the isa_bit_count
 const char* isa_grammar[NUMBER_OF_ISA_INSTRUCTIONS] = {
@@ -25,8 +26,10 @@ const char* isa_grammar[NUMBER_OF_ISA_INSTRUCTIONS] = {
     "MUL DR SR 000 SR",
     "MUL DR SR 0 IMM5",
     "ST DR 0000000 SR",
-    "ST DR 00 IMM8",
-    "JMP IMM12"
+    "ST DR 0 IMM8",
+    "JMP IMM12",
+    "DIV DR SR 000 SR",
+    "DIV DR SR 0 IMM5",
 };
 
 // all instructions should take "operation registers"
@@ -51,6 +54,10 @@ void isa_jump(struct ISA_Operation op) {
     *op.systemReservedRegisters[PROGRAM_COUNTER_REGISTER_ADDRESS] = *op.operationRegisters[0];
 }
 
+void isa_divide(struct ISA_Operation op) {
+    *op.operationRegisters[0] = *op.operationRegisters[1] / *op.operationRegisters[2];
+}
+
 const keywordFunc isa_instruction_map[NUMBER_OF_ISA_INSTRUCTIONS] = {
     isa_add,
     isa_add,
@@ -60,5 +67,7 @@ const keywordFunc isa_instruction_map[NUMBER_OF_ISA_INSTRUCTIONS] = {
     isa_multiply,
     isa_str,
     isa_str,
-    isa_jump
+    isa_jump,
+    isa_divide,
+    isa_divide,
 };

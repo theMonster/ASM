@@ -35,16 +35,14 @@ void interpretAndExecuteFile(FILE *f) {
     char line[MAX_LINE_SIZE];
     for (size_t i = 0; fgets(line, sizeof(line), f) != NULL && i < MAX_NUMBER_OF_COMMANDS; ++i) /* read a line */
     {
-        
         int opCode = 0;
-        const char *byteCode = translateAssemblyToByteCode(line, &opCode);
+        char* lineCpy = malloc(MAX_LINE_SIZE);
+        memcpy(lineCpy, line, MAX_LINE_SIZE);
+        const char *byteCode = translateAssemblyToByteCode(lineCpy, &opCode);
         if (byteCode) {
-            char* lineCpy = malloc(MAX_LINE_SIZE);
-            memcpy(lineCpy, line, MAX_LINE_SIZE);
             struct Instruction newInstruction = { opCode, lineCpy, byteCode };
             instructions[i] = newInstruction;
         }
-        
     }
     fclose(f);
     
@@ -52,7 +50,9 @@ void interpretAndExecuteFile(FILE *f) {
     for (size_t i = 0; i < MAX_NUMBER_OF_COMMANDS; ++i) {
         isa_register_t *programCounter = reservedRegisters[PROGRAM_COUNTER_REGISTER_ADDRESS];
         struct Instruction instruction = instructions[*programCounter];
-        if (strlen(instruction.byteCode) <= 0) break;
+        if (!instruction.originalAsm || strlen(instruction.originalAsm) <= 0) {
+            break;
+        }
         printf("%s", instruction.originalAsm);
         // move the program counter
         *programCounter = *programCounter + 1;
@@ -65,8 +65,6 @@ void interpretAndExecuteFile(FILE *f) {
         isa_register_t gr_v = *generalPurposeRegisters[i];
         isa_register_t rr_v = *reservedRegisters[i];
         printf("GR%i = %i | SR%i = %i;\n", i, gr_v, i, rr_v);
-        // free registers
-//                free(reservedRegisters[i]);
         free(generalPurposeRegisters[i]);
     }
 }
