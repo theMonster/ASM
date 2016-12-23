@@ -14,9 +14,6 @@
 #include "utilities.h"
 
 char* getByteCodeForToken(const char *token, const char *grammar, const int opCode) {
-    const uint64_t lengthOfToken = strlen(token);
-    char *byteCode = malloc(lengthOfToken);
-
     // check conversions:
     if (token[0] == '#' || (token[0] == '0' && token[1] == 'b') || (token[0] == '0' && token[1] == 'x')) {
         while (*(grammar - 3) != 'I') ++grammar;
@@ -26,7 +23,7 @@ char* getByteCodeForToken(const char *token, const char *grammar, const int opCo
             ++token;
             // for now, we'll just assume the immediate value is the last argument
             int n = atoi(token);
-            byteCode = convertValueToBinaryString(n, numberOfBitsForImmediateValue);
+            return convertValueToBinaryString(n, numberOfBitsForImmediateValue);
         }
         else if (token[0] == '0' && token[1] == 'b') {
             // ... Immediate Binary Value
@@ -39,25 +36,21 @@ char* getByteCodeForToken(const char *token, const char *grammar, const int opCo
                 if (i < tokenLength) tmp[numberOfBitsForImmediateValue - 1 - i] = token[tokenLength - 1 - i];
                 else tmp[numberOfBitsForImmediateValue - 1 - i] = '0';
             }
-            byteCode = tmp;
+            return tmp;
         }
     } else if (token[0] == 'R') {
         // ... registers
         // move all characters down by 1 (moving 'r' off)
         ++token;
 
-        char *binaryString = convertValueToBinaryString(atoi(token), isa_register_size);
-        strncpy(byteCode, binaryString, 4);
-        free(binaryString);
+        return convertValueToBinaryString(atoi(token), isa_register_size);
     } else {
         // ... opcode
         // generate byte code for op code
-        char *binaryString = convertValueToBinaryString(opCode, isa_opcode_size);
-        strncpy(byteCode, binaryString, 4);
-        free(binaryString);
+        return convertValueToBinaryString(opCode, isa_opcode_size);
     }
-
-    return byteCode;
+    
+    return NULL;
 }
 
 
@@ -109,23 +102,23 @@ int findGrammarIndex(const char *asmCode) {
     return -1;
 }
 
-char* translateAssemblyToByteCode(char *assemblyCode, int *opCode) {
+void translateAssemblyToByteCode(char *assemblyCode, char** result, int *opCode) {
+    char *byteCode = malloc(isa_bit_count);
     size_t asmLineLen = strlen(assemblyCode);
     char *assemblyCodeCopy = malloc(asmLineLen);
     memcpy(assemblyCodeCopy, assemblyCode, asmLineLen);
     // validate assembly:
     if (!assemblyCode || strlen(assemblyCode) == 0) {
-        return NULL;
+        return;
     }
     
-    char *byteCode = malloc(isa_bit_count);
     *opCode = findGrammarIndex(assemblyCodeCopy);
     // did the grammar successfully get reported
     if (*opCode < 0) {
-        if (*assemblyCodeCopy == '\n') return NULL; // fail silently... (it's just whitespace)
+        if (*assemblyCodeCopy == '\n') return; // fail silently... (it's just whitespace)
         free(byteCode);
         free(assemblyCodeCopy);
-        return NULL;
+        return;
     }
 
     const char* grammar = isa_grammar[*opCode];
@@ -148,7 +141,6 @@ char* translateAssemblyToByteCode(char *assemblyCode, int *opCode) {
         
         char *byteCodeForToken = getByteCodeForToken(assemblyToken, grammarToken, *opCode);
         byteCode = append(byteCode, byteCodeForToken);
-        
     }
     
     free(assemblyCodeCopy);
@@ -159,6 +151,6 @@ char* translateAssemblyToByteCode(char *assemblyCode, int *opCode) {
         printf("FATAL: Code Generator failed to generate proper byte count (%zu should be %i) for given asm: \"%s\" and grammar: \"%s\". Result = \"%s\" opcode = \"%i\".\n", byteCodeLen, isa_bit_count, assemblyCode, grammar, byteCode, *opCode);
         exit(EXIT_FAILURE);
     }
-    return byteCode;
+    *result = byteCode;
 }
 

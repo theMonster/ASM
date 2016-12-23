@@ -38,7 +38,8 @@ void interpretAndExecuteFile(FILE *f) {
         int opCode = 0;
         char* lineCpy = malloc(MAX_LINE_SIZE);
         memcpy(lineCpy, line, MAX_LINE_SIZE);
-        const char *byteCode = translateAssemblyToByteCode(lineCpy, &opCode);
+        char *byteCode;
+        translateAssemblyToByteCode(lineCpy, &byteCode, &opCode);
         if (byteCode) {
             struct Instruction newInstruction = { opCode, lineCpy, byteCode };
             instructions[i] = newInstruction;
@@ -54,7 +55,7 @@ void interpretAndExecuteFile(FILE *f) {
         if (code != 0) {
             char *title, *message;
             retrieveInfoForStatusCode(code, &title, &message);
-            printf("ERROR <code: %i>: %s. \"%s\"", code, title, message);
+            printf("ERROR <code: %i>: %s. \"%s\"\n", code, title, message);
         }
         // execute the next command
         struct Instruction instruction = instructions[*programCounter];
@@ -67,6 +68,21 @@ void interpretAndExecuteFile(FILE *f) {
         executeByteCode(instruction, registersCount, generalPurposeRegisters, registersCount, reservedRegisters);
     }
     
+    // free the operations.
+    // we do this after we've executed because it's possible to jump between operations.
+    for (size_t i = 0; i < MAX_NUMBER_OF_COMMANDS; ++i) {
+        struct Instruction instruction = instructions[i];
+        // if it's null, we assume this is the end.
+        if (!instruction.originalAsm || strlen(instruction.originalAsm) <= 0) {
+            break;
+        }
+        else {
+            // free the memory
+            free((void*)instruction.byteCode);
+            free((void*)instruction.originalAsm);
+        }
+    }
+    
     printf("\n\n---- Registers ----\n");
     
     for (int i = 0; i < registersCount; ++i) {
@@ -75,4 +91,5 @@ void interpretAndExecuteFile(FILE *f) {
         printf("GR%i = %i | SR%i = %i;\n", i, gr_v, i, rr_v);
         free(generalPurposeRegisters[i]);
     }
+    
 }
