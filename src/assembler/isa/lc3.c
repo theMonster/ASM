@@ -26,7 +26,7 @@ const char* isa_grammar[NUMBER_OF_ISA_INSTRUCTIONS] = {
     "MUL DR SR 0 IMM5",
     "ST DR 0000000 SR",
     "ST DR 00 IMM8",
-    "JMP IMM12",
+    "JMP IMM12"
 };
 
 // all instructions should take "operation registers"
