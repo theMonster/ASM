@@ -13,7 +13,7 @@
 #include "lc3.h"
 /* --- isa header goes above --- */
 
-#include "lexer.h"
+#include "codegen.h"
 #include "interpreter.h"
 
 /* -- Assembler functions -- */

@@ -16,7 +16,7 @@ const uint16_t isa_opcode_size = 4;
 const uint16_t isa_register_size = 3;
 /// system reserved registers <public use> (required by all ISAs)
 const isa_register_t MACHINE_STATUS_REGISTER_ADDRESS = 0;
-const isa_register_t IMMUTABLE_VALUE_REGISTER_ADDRESS = 1;
+const isa_register_t IMMUTABLE_VALUE_REGISTER_ADDRESS = 7;
 const isa_register_t PROGRAM_COUNTER_REGISTER_ADDRESS = 2;
 /// system reserved registers <internal use>
 
@@ -33,6 +33,7 @@ const char* isa_grammar[NUMBER_OF_ISA_INSTRUCTIONS] = {
     "JMP IMM12",
     "DIV DR SR 000 SR",
     "DIV DR SR 0 IMM5",
+//    "BR*** IMM9",
 };
 
 // all instructions should take "operation registers"
@@ -66,6 +67,10 @@ void LC3_Throws isa_divide(struct ISA_Operation op) {
         // cannot divide by `divsor <= 0`. ERROR<code: 009>: BAD_Arithmetic.
         *op.systemReservedRegisters[MACHINE_STATUS_REGISTER_ADDRESS] = 9;
     }
+}
+
+void isa_brnzp(struct ISA_Operation op) {
+    
 }
 
 const keywordFunc isa_instruction_map[NUMBER_OF_ISA_INSTRUCTIONS] = {
