@@ -36,7 +36,8 @@ void interpretAndExecuteFile(FILE *f) {
     void* memory[MAX_ADDRESSABLE_MEMORY_COUNT];
     const size_t MAX_LINE_SIZE = 256;
     char line[MAX_LINE_SIZE];
-    for (size_t i = 0; fgets(line, sizeof(line), f) != NULL && i < MAX_ADDRESSABLE_MEMORY_COUNT;) /* read a line */ {
+    size_t numberOfInstructions = 0;
+    while (fgets(line, sizeof(line), f) != NULL && numberOfInstructions < MAX_ADDRESSABLE_MEMORY_COUNT) {
         int opCode = 0;
         char *originalLine = malloc(sizeof(line));
         strcpy(originalLine, line);
@@ -46,13 +47,13 @@ void interpretAndExecuteFile(FILE *f) {
             translateAssemblyToByteCode(lineCpy, &byteCode, &opCode);
             struct Instruction* newInstruction = malloc(sizeof(struct Instruction));
             *newInstruction = (struct Instruction){ opCode, originalLine, byteCode };
-            memory[i++] = newInstruction;
+            memory[numberOfInstructions++] = newInstruction;
         }
     }
     fclose(f);
     
     // execute byte code
-    for (size_t i = 0; i < MAX_ADDRESSABLE_MEMORY_COUNT; ++i) {
+    for (size_t i = 0; i < numberOfInstructions; ++i) {
         isa_register_t *programCounter = reservedRegisters[PROGRAM_COUNTER_REGISTER_ADDRESS];
         isa_register_t code = *reservedRegisters[MACHINE_STATUS_REGISTER_ADDRESS];
         // check the system's status byte for errors
@@ -85,28 +86,22 @@ void interpretAndExecuteFile(FILE *f) {
     // we do this after we've executed because it's possible to "jump" between operations.
     for (size_t i =  0; i < MAX_ADDRESSABLE_MEMORY_COUNT; ++i) {
         void* memorySegment = memory[i];
-        if (memorySegment) {
-//            free(memorySegment);
+        
+        if (i < numberOfInstructions) {
+            struct Instruction* instruction = (struct Instruction *)memorySegment;
+            // free the memory
+            free((void*)instruction->byteCode);
+            free((void*)instruction->originalAsm);
+            free(instruction);
         }
-//        struct Instruction instruction = instructions[i];
-//        // if it's null, we assume this is the end.
-//        if (!instruction.originalAsm || strlen(instruction.originalAsm) <= 0) {
-//            break;
-//        }
-//        else {
-//            // free the memory
-//            free((void*)instruction.byteCode);
-//            free((void*)instruction.originalAsm);
-//        }
+        // TODO: free other types of memory
     }
     
     printf("\n\n---- Registers ----\n");
-    
     for (int i = 0; i < registersCount; ++i) {
         isa_register_t gr_v = *generalPurposeRegisters[i];
         isa_register_t rr_v = *reservedRegisters[i];
         printf("GR%i = %i | SR%i = %i;\n", i, gr_v, i, rr_v);
         free(generalPurposeRegisters[i]);
     }
-    
 }
