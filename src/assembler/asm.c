@@ -101,7 +101,7 @@ void interpretAndExecuteFile(FILE *f) {
     for (int i = 0; i < registersCount; ++i) {
         isa_register_t gr_v = *generalPurposeRegisters[i];
         isa_register_t rr_v = *reservedRegisters[i];
-        printf("GR%i = %i | SR%i = %i;\n", i, gr_v, i, rr_v);
+        printf("GR%i = %3i | SR%i = %3i;\n", i, gr_v, i, rr_v);
         free(generalPurposeRegisters[i]);
     }
 }
