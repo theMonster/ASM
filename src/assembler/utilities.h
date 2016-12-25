@@ -9,7 +9,7 @@
 #ifndef utilities_h
 #define utilities_h
 
-#include "asm.h"
+#include "asm-private.h"
 
 extern char* append(char * string1, char * string2);
 extern isa_register_t convertBinaryStringToInt(char *binaryString, uint64_t numberOfBitsInString);

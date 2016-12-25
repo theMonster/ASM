@@ -9,12 +9,7 @@
 #ifndef asm_h
 #define asm_h
 
-/* --- isa header goes below --- */
-#include "lc3.h"
-/* --- isa header goes above --- */
-
-#include "codegen.h"
-#include "interpreter.h"
+#include <stdio.h>
 
 /* -- Assembler functions -- */
 extern void interpretAndExecuteFile(FILE *f);

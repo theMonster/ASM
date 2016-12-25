@@ -25,7 +25,7 @@ char* getByteCodeForToken(const char *token, const char *grammar, const int opCo
             int n = atoi(token);
             return convertValueToBinaryString(n, numberOfBitsForImmediateValue);
         }
-        else if (token[0] == '0' && token[1] == 'b') {
+        else if (token[0] == 'b' && token[1] == 'b') {
             // ... Immediate Binary Value
             token += 2;
             size_t tokenLength = strlen(token);
@@ -56,50 +56,58 @@ char* getByteCodeForToken(const char *token, const char *grammar, const int opCo
 
 
 int findGrammarIndex(const char *asmCode) {
+    // the number of successfully run loops determines which grammar is the best for this asm code.
+    int loopCounts[NUMBER_OF_ISA_INSTRUCTIONS];
+    // we begin by looping through each grammar.
     for (int i = 0; i < NUMBER_OF_ISA_INSTRUCTIONS; ++i) {
-        char *grammar = malloc(strlen(isa_grammar[i]));
-        strcpy(grammar, isa_grammar[i]);
+        const char *grammar = isa_grammar[i];
+        char *grammarCopy = strdup(grammar), *assemblyCodeCopy = strdup(asmCode);
+        char *assemblyToken, *grammarToken;
+        
+        // then calculating the accuracy of each token.
+        int loopCount = 0;
+        while (assemblyCodeCopy && grammarCopy) {
+            /// get the tokens:
+            // these while loops move through each "string seperated by a space char", until it finds one is valid.
+            // assemblyToken criteria: is that the length of the token is greater than 0.
+            while (strlen(assemblyToken = strsep(&assemblyCodeCopy, " ")) <= 0);
+            // grammarToken criteria: is that the length of the token is > 0 AND that it does not begin with a '0' or "void bit".
+            // we skip void bits since they have no relevance to actual assembly code.
+            while (strlen(grammarToken = strsep(&grammarCopy, " ")) <= 0 || grammarToken[0] == '0');
 
-        const char *assemblyCode = asmCode;
-        while (1) {
-
-            if (*grammar != *assemblyCode && *grammar != 'I')
+            // begin the matching process
+            // on the first token, we need to check the op codes:
+            if (loopCount == 0 && strcmp(grammarToken, assemblyToken) != 0) {
                 break;
-
-            if (*grammar == 'R') {
-                // register...
-                while (*((++grammar - 1)) != ' ' && *grammar != '\0');
-                while (*((++assemblyCode - 1)) != ' ' && *assemblyCode != '\0');
             }
-            else if (*grammar == 'I') {
-                // immediate value...
-                while (*((++grammar - 1)) != ' ' && *grammar != '\0');
-                while (*((++assemblyCode - 1)) != ' ' && *assemblyCode != '\0');
+            /// everything after the first token is basically "free range" meaning there' no designated order.
+            // is this supposed to be a register? (grammar's that define a register, can put a single char in front of an R):
+            else if (grammarToken[1] == 'R' && assemblyToken[0] != 'R') {
+                break;
             }
-            else if (*grammar == *assemblyCode) {
-                // opcode
-                while (*(++grammar) == *(++assemblyCode));
+            // is this supposed to be a immutable value?:
+            //
+            else if (grammarToken[0] == 'I' && (assemblyToken[0] != '#')) {
+                break;
             }
-            else {
-                break; // failed to match the token, we'll assume that this is no match.
-            }
-
-            // skip void bits
-            while (*grammar == '0' || *grammar == '1') ++grammar;
-            if (*grammar == ' ') ++grammar;
-
-            // if 'grammar' ends on a SR or DR, remove the 'S' or 'D'
-            if ((*grammar == 'S' || *grammar == 'D') && *(grammar + 1) == 'R')
-                ++grammar;
-
-            // if both grammar and assemblyCode have reached the end and are '\0', then we've found a match
-            if (*grammar == '\0' && *assemblyCode == '\0') {
-                return i;
-            }
-
+            // increment the loop count since our test for validating these tokens passed.
+            ++loopCount;
+        }
+        // set our loop count
+        loopCounts[i] = loopCount;
+    }
+    // find the grammar who had the best loop count:
+    int bestIndex = -1;
+    int bestLoopCount = 0;
+    for (int i = 0; i < NUMBER_OF_ISA_INSTRUCTIONS; ++i) {
+        int contestingLoopCount = loopCounts[i];
+        if (contestingLoopCount > bestLoopCount) {
+            bestIndex = i;
+            bestLoopCount = contestingLoopCount;
         }
     }
-    return -1;
+    
+    return bestIndex;
 }
 
 void translateAssemblyToByteCode(char *assemblyCode, char** result, int *opCode) {
@@ -115,9 +123,8 @@ void translateAssemblyToByteCode(char *assemblyCode, char** result, int *opCode)
     *opCode = findGrammarIndex(assemblyCodeCopy);
     // did the grammar successfully get reported
     if (*opCode < 0) {
-        if (*assemblyCodeCopy == '\n') return; // fail silently... (it's just whitespace)
+        printf("FATAL: Code Generator failed to find a grammar for given asm: \"%s\". Result = \"%s\".\n", assemblyCode, byteCode);
         free(byteCode);
-        free(assemblyCodeCopy);
         return;
     }
 
@@ -128,9 +135,11 @@ void translateAssemblyToByteCode(char *assemblyCode, char** result, int *opCode)
     char *assemblyToken, *grammarToken;
     
     while (assemblyCodeCopy && grammarCopy) {
-        // get the tokens
-        assemblyToken = strsep(&assemblyCodeCopy, " ");
-        grammarToken = strsep(&grammarCopy, " ");
+        /// get the tokens:
+        // these while loops move through each "string seperated by a space char", until it finds one is valid.
+        // criteria is that the length of the token is greater than 0.
+        while (strlen(assemblyToken = strsep(&assemblyCodeCopy, " ")) <= 0);
+        while (strlen(grammarToken = strsep(&grammarCopy, " ")) <= 0);
         
         // inject void bits:
         while (grammarToken && *grammarToken == '0') {
@@ -143,7 +152,6 @@ void translateAssemblyToByteCode(char *assemblyCode, char** result, int *opCode)
         byteCode = append(byteCode, byteCodeForToken);
     }
     
-    free(assemblyCodeCopy);
     free(grammarCopy);
     // check our work:
     const size_t byteCodeLen = strlen(byteCode);
