@@ -37,11 +37,13 @@ void interpretAndExecuteFile(FILE *f) {
     const size_t MAX_LINE_SIZE = 256;
     char line[MAX_LINE_SIZE];
     size_t numberOfInstructions = 0;
+    struct PreProcessorContext *context = malloc(sizeof(struct PreProcessorContext));
+    initPreProcessorContext(context);
     while (fgets(line, sizeof(line), f) != NULL && numberOfInstructions < MAX_ADDRESSABLE_MEMORY_COUNT) {
         int opCode = 0;
         char *originalLine = malloc(sizeof(line));
         strcpy(originalLine, line);
-        char *lineCpy = preProcessAssemblyCode(line, MAX_ADDRESSABLE_MEMORY_COUNT, memory);
+        char *lineCpy = preProcessAssemblyCode(context, MAX_LINE_SIZE, line, MAX_ADDRESSABLE_MEMORY_COUNT, memory);
         if (lineCpy && strlen(lineCpy) > 0) {
             char *byteCode;
             translateAssemblyToByteCode(lineCpy, &byteCode, &opCode);
