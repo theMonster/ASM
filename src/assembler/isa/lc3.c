@@ -11,6 +11,7 @@
 #define LC3_Throws
 
 /* define these */
+const size_t isa_max_address_size = 9;
 const uint16_t isa_bit_count = 16;
 const uint16_t isa_opcode_size = 4;
 const uint16_t isa_register_size = 3;
@@ -28,8 +29,8 @@ const char* isa_grammar[NUMBER_OF_ISA_INSTRUCTIONS] = {
     "AND DR SR IMM6",
     "MUL DR SR 000 SR",
     "MUL DR SR 0 IMM5",
-    "ST DR 0000000 SR",
     "ST DR 0 IMM8",
+    "ST DR 0000000 SR",
     "JMP IMM12",
     "DIV DR SR 000 SR",
     "DIV DR SR 0 IMM5",

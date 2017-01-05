@@ -9,6 +9,6 @@
 #ifndef codegen_h
 #define codegen_h
 
-extern void translateAssemblyToByteCode(char *assemblyCode, char** result, int *opCode);
+extern char* translateAssemblyToByteCode(void *preProcessorContext, char *assemblyCode, int *opCode);;
 
 #endif

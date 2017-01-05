@@ -14,6 +14,7 @@
 
 /* define these */
 #define NUMBER_OF_ISA_INSTRUCTIONS 11
+extern const size_t isa_max_address_size;
 extern const uint16_t isa_bit_count;
 extern const uint16_t isa_opcode_size;
 extern const uint16_t isa_register_size;

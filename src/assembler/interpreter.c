@@ -16,7 +16,8 @@ void executeByteCode(Instruction instruction, size_t generalPurposeRegistersCoun
     // create copy of bytecode
     char* mutableByteCode = malloc(sizeof(char) * isa_bit_count);
     strcpy(mutableByteCode, instruction.byteCode);
-    char* mutableGrammar = malloc(sizeof(char) * strlen(isa_grammar[instruction.opCode]));
+    const size_t grammarLen = strlen(isa_grammar[instruction.opCode]);
+    char* mutableGrammar = malloc(sizeof(char) * grammarLen);
     strcpy(mutableGrammar, isa_grammar[instruction.opCode]);
 
     // remove void bits

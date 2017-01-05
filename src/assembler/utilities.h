@@ -16,8 +16,12 @@ typedef char bool;
 #define true 1
 #define false 0
 
-extern char* append(char * string1, char * string2);
 extern isa_register_t convertBinaryStringToInt(char *binaryString, uint64_t numberOfBitsInString);
 extern char* convertValueToBinaryString(uint64_t value, size_t length);
+extern bool isOpCode(const char* str, size_t len);
+
+// label utilites stuff:
+extern void* findLabelInContext(void *preProcessorContext, const char* name);
+extern void addLabelToContext(void *preProcessorContext, void *label);
 
 #endif

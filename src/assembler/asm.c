@@ -32,27 +32,36 @@ void interpretAndExecuteFile(FILE *f) {
     allocateRegisters(generalPurposeRegisters, registersCount);
 
     // generate byte code
-    const size_t MAX_ADDRESSABLE_MEMORY_COUNT = powf(2, isa_bit_count);
+    const size_t MAX_ADDRESSABLE_MEMORY_COUNT = powf(2, isa_max_address_size);
     void* memory[MAX_ADDRESSABLE_MEMORY_COUNT];
     const size_t MAX_LINE_SIZE = 256;
     char line[MAX_LINE_SIZE];
-    size_t numberOfInstructions = 0;
+    size_t numberOfInstructions = 0, lineNumber = 0;
     struct PreProcessorContext *context = malloc(sizeof(struct PreProcessorContext));
-    initPreProcessorContext(context);
+    initPreProcessorContext(context, MAX_ADDRESSABLE_MEMORY_COUNT);
     while (fgets(line, sizeof(line), f) != NULL && numberOfInstructions < MAX_ADDRESSABLE_MEMORY_COUNT) {
         int opCode = 0;
-        char *originalLine = malloc(sizeof(line));
-        strcpy(originalLine, line);
-        char *lineCpy = preProcessAssemblyCode(context, MAX_LINE_SIZE, line, MAX_ADDRESSABLE_MEMORY_COUNT, memory);
+        char *originalLine = strdup(line);
+        char *lineCpy = preProcessAssemblyCode(context, MAX_LINE_SIZE, numberOfInstructions, line);
+        // check context for errors
+        if (context->errorCode > 0) {
+            char *title, *msg;
+            retrieveInfoForPreProcessorStatusCode(context->errorCode, &title, &msg);
+            printf("ERROR[%zu:%i] > \"%s\" (%s)\n", lineNumber, context->errorAtCharacterIndex, title, msg);
+            return;
+        }
+        // use the preprocessed out line and turn it into an instruction / byte code.
         if (lineCpy && strlen(lineCpy) > 0) {
-            char *byteCode;
-            translateAssemblyToByteCode(lineCpy, &byteCode, &opCode);
+            char *byteCode = translateAssemblyToByteCode(context, lineCpy, &opCode);
             struct Instruction* newInstruction = malloc(sizeof(struct Instruction));
             *newInstruction = (struct Instruction){ opCode, originalLine, byteCode };
             memory[numberOfInstructions++] = newInstruction;
         }
+        // increment the line number
+        ++lineNumber;
     }
     fclose(f);
+    deinitPreProcessorContext(context, memory);
     
     // execute byte code
     for (size_t i = 0; i < numberOfInstructions; ++i) {
